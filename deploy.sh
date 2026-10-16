@@ -10,7 +10,25 @@ TARGET="${1:?usage: deploy.sh <project-path> [--symlink]}"
 MODE=copy
 [ "${2:-}" = "--symlink" ] && MODE=symlink
 
+# Preflight: required tools.
+for tool in git gh; do
+  command -v "$tool" >/dev/null || { echo "missing: $tool (install it, then re-run)"; exit 1; }
+done
+gh auth status >/dev/null 2>&1 || echo "warning: gh is not logged in. Run: gh auth login (needed for PRs)"
+
 mkdir -p "$TARGET/.claude/agents" "$TARGET/.claude/skills" "$TARGET/docs"
+
+# Preflight: target should be a git repo with a remote (builder opens PRs).
+if ! git -C "$TARGET" rev-parse --git-dir >/dev/null 2>&1; then
+  echo "warning: $TARGET is not a git repo. Run: git init (builder needs it)"
+elif ! git -C "$TARGET" remote get-url origin >/dev/null 2>&1; then
+  echo "warning: $TARGET has no 'origin' remote. Add one before the builder runs."
+fi
+
+# Symlinks point at this checkout. Other people who clone the project get dead links.
+if [ "$MODE" = symlink ]; then
+  echo "warning: symlink mode is for your own machine only. Do not commit the project with symlinks."
+fi
 
 # agentxs owns agents and skills: always refresh them.
 for f in "$SRC"/.claude/agents/*.md; do

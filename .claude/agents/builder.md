@@ -47,7 +47,7 @@ Overall: NN% (changed files: NN%)
 - …
 ```
 
-10. **Set status** to `in-review` in `docs/board.md` (on your branch, commit it with the PR).
+10. **Do not edit `docs/board.md`.** Parallel builders would conflict on it. Boss updates the board on `main`. Your PR body is your status report.
 11. **Report** to the boss in this format:
 
 ```
@@ -55,15 +55,16 @@ Ticket: T-004
 PR: <url>
 Tests: <count> written, all passing
 Coverage: NN%
+Board status to set: in-review
 Summary for the human (3 lines max, plain words):
 ```
 
 ## Rework (reviewer sent it back)
 
-- Read the reviewer's comments on the PR.
+- Read the reviewer's `CHANGES REQUESTED` comment on the PR.
 - Fix each item. If you disagree, reply on the PR with a reason. Do not silently skip.
 - Add a test for each functional gap the reviewer found.
-- Push, set status back to `in-review`, report again.
+- Push, report again with `Board status to set: in-review`.
 
 ## Rules
 

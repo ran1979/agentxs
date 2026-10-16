@@ -41,15 +41,17 @@ Then install it into a project (see below). Pull updates any time with `git pull
 
 ## Install into a project
 
-Requirements: [Claude Code](https://claude.com/claude-code), `git`, GitHub CLI (`gh`) logged in.
+Requirements: [Claude Code](https://claude.com/claude-code), `git`, GitHub CLI (`gh`) logged in. The project must be a git repo with an `origin` remote (deploy.sh warns if not). Windows: use WSL.
 
 ```bash
-# copy (snapshot, default)
+# copy (snapshot, default, safe to commit and share)
 ./deploy.sh ~/path/to/your-project
 
-# symlink (edits in this repo show up in every linked project)
+# symlink (edits in this repo show up in the project; this machine only)
 ./deploy.sh ~/path/to/your-project --symlink
 ```
+
+Do not commit a project that was installed with `--symlink`: the links point to this checkout and break on other machines.
 
 This installs:
 
@@ -85,7 +87,7 @@ Step by step:
 4. **Say what you want to build**, in plain words. Boss starts the PM.
 5. **PM asks questions**, one at a time. Answer them. Result: `docs/requirements.md`.
 6. **Architect designs it**: options, diagrams, phases. Result: `docs/architecture.md` and tickets in `docs/board.md`. Read it, then tell boss to go ahead.
-7. **Builder and reviewer work the tickets**: one ticket, one branch, one PR. Reviewer approves or sends it back. Boss merges only after approval.
+7. **Builder and reviewer work the tickets**: one ticket, one branch, one PR. Reviewer posts `APPROVED` or `CHANGES REQUESTED` as a PR comment. Boss merges only on `APPROVED`. (The gate is by convention: builder and reviewer share one GitHub account, so GitHub cannot enforce it. Use a separate reviewer account if you need a hard gate.)
 8. **Follow along** in `docs/log.md`, which has a plain-language entry per step. Ask boss for more detail any time.
 9. **Retro** after each phase: `/retro`. Proposes process changes; applies only what you approve.
 

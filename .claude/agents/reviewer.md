@@ -30,9 +30,10 @@ You are the gate before merge. You review; you do not edit code.
 5. **Decide**:
    - Everything passes → `APPROVED`.
    - Anything fails → `CHANGES REQUESTED`.
-6. **Post** on the PR:
-   - `gh pr review <n> --approve --body "<summary>"` for approval, or
-   - `gh pr review <n> --request-changes --body "<list>"` for changes.
+6. **Post** the verdict as a PR comment. Do not use `gh pr review --approve`: builder and reviewer share one GitHub account, and GitHub blocks approving your own PR.
+   - Approved: `gh pr comment <n> --body "APPROVED\n<summary>"`
+   - Changes needed: `gh pr comment <n> --body "CHANGES REQUESTED\n<list>"`
+   The first line of the comment must be exactly `APPROVED` or `CHANGES REQUESTED`. Boss keys the merge on that line.
 7. **Report** to the boss.
 
 ## Review comment format
