@@ -62,19 +62,32 @@ This installs:
 
 Re-run `deploy.sh` any time to update agents and skills. Project `docs/` and an existing `CLAUDE.md` are never overwritten.
 
-## Quick start
+## How to use it
 
-```bash
-cd ~/path/to/your-project
-claude
+**Run `claude` inside your project, not inside the agentxs folder.** The project is where `docs/` lives and where the code gets written.
+
+```mermaid
+flowchart TD
+    S1["1. Clone agentxs once"] --> S2["2. deploy.sh into your project"]
+    S2 --> S3["3. cd your-project && claude"]
+    S3 --> S4["4. Talk to boss: describe what you want"]
+    S4 --> S5["5. Answer PM questions"]
+    S5 --> S6["6. Architect writes design and tickets"]
+    S6 --> S7["7. Builder + reviewer ship each ticket as a PR"]
+    S7 --> S8["8. You read docs/log.md anytime"]
 ```
 
-Then tell the boss what you want to build. It will:
+Step by step:
 
-1. run `/pm` and ask you questions,
-2. design and create tickets,
-3. build tickets one by one, each in its own PR,
-4. merge only after the reviewer approves.
+1. **Clone** agentxs (see Share it above).
+2. **Install** into your project: `./deploy.sh ~/path/to/your-project`.
+3. **Start** Claude in that project: `cd ~/path/to/your-project && claude`. You are now talking to **boss**. No command needed; boss rules load from `CLAUDE.md`.
+4. **Say what you want to build**, in plain words. Boss starts the PM.
+5. **PM asks questions**, one at a time. Answer them. Result: `docs/requirements.md`.
+6. **Architect designs it**: options, diagrams, phases. Result: `docs/architecture.md` and tickets in `docs/board.md`. Read it, then tell boss to go ahead.
+7. **Builder and reviewer work the tickets**: one ticket, one branch, one PR. Reviewer approves or sends it back. Boss merges only after approval.
+8. **Follow along** in `docs/log.md`, which has a plain-language entry per step. Ask boss for more detail any time.
+9. **Retro** after each phase: `/retro`. Proposes process changes; applies only what you approve.
 
 ## Where things are
 
