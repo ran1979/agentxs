@@ -28,6 +28,25 @@ flowchart LR
 
 Not chosen yet. The architect picks it from the requirements and records it in `docs/architecture.md`.
 
+## Tools you need
+
+| Tool | Why | Install (macOS) |
+|------|-----|-----------------|
+| [Claude Code](https://claude.com/claude-code) | Runs the agents | see Claude Code docs |
+| `git` | Branches, commits, pull requests | `xcode-select --install` or `brew install git` |
+| GitHub CLI `gh` | Opens PRs, posts reviews, merges. Run `gh auth login` once. | `brew install gh` |
+| `jq` | Reads the JSON that Claude Code gives to hooks (see below) | `brew install jq` |
+| `gitleaks` (optional) | Stronger secret scan on every commit | `brew install gitleaks` |
+
+**What is `jq`?** A command-line tool that reads JSON and pulls out or builds pieces of it, like `grep` for JSON:
+
+```bash
+echo '{"name":"agentxs","tags":["ai","agents"]}' | jq -r '.name'
+# agentxs
+```
+
+The hooks use it to read what Claude is about to run (so the commit guard knows a `git commit` is coming), to read the transcript path (so the ralph loop can see what Claude last said), and to send back the "keep going" message. `deploy.sh` checks for `jq` and tells you if it is missing. No `jq`, no guards and no ralph loop.
+
 ## Share it
 
 Get agentxs from GitHub:
@@ -91,22 +110,64 @@ Enforced by hooks, not just by instructions:
 | Ask first | `git push` and `gh pr merge` ask you. Force-push and `rm -rf` are denied. |
 | Reviewer | Scans the whole PR diff again, checks security basics and new dependencies. |
 
-Optional: install `gitleaks` for a stronger scan. The scan uses it automatically when present.
-
 Already-committed secrets or personal data are not fixed by the guard. Rotate or rewrite history yourself. Boss will not do that.
+
+### How the guards work
+
+Claude Code reads `.claude/settings.json` in your project. It holds two kinds of rules:
+
+- **permissions**: what Claude may run without asking (`allow`), what asks you first (`ask`), what is never allowed (`deny`).
+- **hooks**: scripts Claude Code runs at fixed moments. Each hook gets JSON about what is happening and can block it.
+
+agentxs uses two hooks:
+
+```mermaid
+flowchart LR
+    C[Claude wants to run a command] --> P{Is it git commit?}
+    P -->|no| OK[Runs]
+    P -->|yes| S[scan.sh scans staged changes]
+    S -->|clean| OK2[Commit runs]
+    S -->|secret or personal data| X[Blocked. Claude is told the file and type]
+```
+
+| File | Role |
+|------|------|
+| `.claude/settings.json` | Permissions and which hook runs when |
+| `.claude/hooks/guard-commit.sh` | Runs before each Bash command; passes only `git commit` on to the scan |
+| `.claude/hooks/scan.sh` | The scan: regex rules, your terms, and gitleaks if installed |
+| `.claude/guard-terms.txt` | Your own names, usernames, and IDs, one per line |
+
+You can run the scan yourself, any time:
+
+```bash
+.claude/hooks/scan.sh                        # staged changes
+.claude/hooks/scan.sh origin/main...HEAD     # a whole branch
+```
+
+Exit code 0 means clean. Exit code 2 means something was found; the output names the file and type.
+
+**Limits:** regex finds common patterns, not every secret. It can false-positive, so placeholders like `example.com` and `your-…` are skipped. Treat it as a net, not a guarantee.
 
 ## Ralph loop
 
-Runs one phase of the board in a loop, until the phase is done or blocked. Each pass re-reads `docs/board.md`, so progress lives in files.
+Runs one phase of the board in a loop, until the phase is done or blocked. Each pass re-reads `docs/board.md`, so progress lives in files, not in the chat.
 
 ```
 you: "ralph phase 1, cap 10"
   → boss runs builder → reviewer → merge for each ticket
-  → after each turn, the loop feeds the phase prompt back
-  → stops on <promise>PHASE_DONE</promise>, <promise>BLOCKED</promise>, or the cap
+  → Claude finishes a turn
+  → the Stop hook (ralph-stop.sh) reads the transcript
+  → no promise yet and cap not reached? the hook sends the same phase prompt back
+  → promise <PHASE_DONE> or <BLOCKED>, or cap reached? the loop ends
 ```
 
+- **State file**: `.claude/ralph/state.md` holds the iteration count, the cap, and the phase prompt. It is git-ignored.
+- **Stop hook**: `.claude/hooks/ralph-stop.sh` runs every time Claude finishes a turn. Without a state file it does nothing, so normal use is unaffected.
+- **Why one phase**: a phase is a bounded unit that ends for your review. The loop never runs past it.
+
 Cancel any time: delete `.claude/ralph/state.md`. Ask boss for a cap change before raising it.
+
+Test it on a throwaway project before a real phase. The hook contract comes from Claude Code's documented hook format; it has not been checked against every Claude Code version.
 
 ## How to use it
 
@@ -156,6 +217,10 @@ your project after install:
   docs/board.md             tickets and status (everyone reads this)
   docs/log.md               plain-language history of every step
   docs/retro.md             what we changed and why
+  .claude/settings.json     permissions and hooks
+  .claude/hooks/            guards and ralph stop hook
+  .claude/guard-terms.txt   your names and IDs for the scan
+  .claude/ralph/state.md    only while a ralph loop runs (git-ignored)
 ```
 
 ## Definition of done
