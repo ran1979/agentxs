@@ -64,6 +64,18 @@ This installs:
 
 Re-run `deploy.sh` any time to update agents and skills. Project `docs/` and an existing `CLAUDE.md` are never overwritten.
 
+## Modes
+
+Boss picks one from your first message:
+
+| Mode | Say something like | What you get |
+|------|--------------------|--------------|
+| **explain** | "explain this file", "how does X work" | Plain explanation and diagram. No files written. Good for interview prep. |
+| **assist** | "fix this", "add a small…" | A quick, small change to your code. No PR pipeline. |
+| **ship** | "build X" | Full pipeline: requirements, design, tickets, PRs, review, merge. |
+
+See `examples/todo-api/` for a finished `ship` run.
+
 ## How to use it
 
 **Run `claude` inside your project, not inside the agentxs folder.** The project is where `docs/` lives and where the code gets written.
@@ -97,7 +109,8 @@ Step by step:
 agentxs repo:
   CLAUDE.md                 boss rules
   .claude/agents/           architect, builder, reviewer
-  .claude/skills/           pm, retro
+  .claude/skills/           pm, retro, explain
+  examples/todo-api/        a finished ship-mode run to read
   templates/docs/           standard formats for project docs
   deploy.sh                 install into a project (copy or --symlink)
 
