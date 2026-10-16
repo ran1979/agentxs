@@ -28,6 +28,17 @@ flowchart LR
 
 Not chosen yet. The architect picks it from the requirements and records it in `docs/architecture.md`.
 
+## Share it
+
+Get agentxs from GitHub:
+
+```bash
+git clone https://github.com/ran1979/agentxs.git
+cd agentxs
+```
+
+Then install it into a project (see below). Pull updates any time with `git pull`.
+
 ## Install into a project
 
 Requirements: [Claude Code](https://claude.com/claude-code), `git`, GitHub CLI (`gh`) logged in.
