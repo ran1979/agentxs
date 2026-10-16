@@ -9,14 +9,14 @@ Runs one phase of the board in a loop. Each pass re-reads `docs/board.md`, so pr
 
 ## Start
 
-1. Ask one question if missing: **which phase?** Default cap: **10 iterations**.
+1. Ask one question if missing: **which phase?** Default cap: **4 iterations**. Raise it only if the user asks.
 2. Check `docs/board.md` has unblocked tickets in that phase. If none, say so and stop.
 3. Write `.claude/ralph/state.md` exactly like this (fill in N and the cap):
 
    ```markdown
    ---
    iteration: 1
-   max_iterations: 10
+   max_iterations: 4
    ---
 
    Ralph phase N. Run the ship loop for phase N only.
@@ -37,5 +37,6 @@ Delete `.claude/ralph/state.md`. Tell the user the loop is off and where it stop
 ## Rules
 
 - Never print a promise to escape the loop. A false `PHASE_DONE` skips review.
-- Always keep a cap. Ask the user before raising it.
+- Always keep a cap. Default 4. Ask the user before raising it.
+- Each pass keeps the same session, so context grows. Keep the cap low; a phase that needs more passes is too big, so split it.
 - If the user talks to you mid-loop, answer and keep the loop running unless they say cancel.

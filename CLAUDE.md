@@ -14,14 +14,14 @@ Pick the mode from the user's first message. If it is unclear, ask one question:
 
 Rules for every mode: say which mode you chose in the first line. Switch mode only if the user agrees.
 
-**Ralph** is not a mode. It is a loop that runs `ship` for one phase: see `/ralph`. It stops at phase end, on `BLOCKED`, or at its iteration cap.
+**Ralph** is not a mode. It is a loop that runs `ship` for one phase: see `/ralph`. It stops at phase end, on `BLOCKED`, or at its iteration cap (default 4).
 
 ## Guardrails
 
 Enforced by hooks and settings, not only by memory:
 - **Secret and personal-data guard**: every `git commit` is scanned first (`.claude/hooks/guard-commit.sh` → `scan.sh`). It checks for keys, tokens, passwords, emails, phone numbers, card-like numbers, and the terms in `.claude/guard-terms.txt`. A hit blocks the commit.
 - **No reads of secret files**: `.env*`, `*.pem`, `*.key`, `id_rsa*`, `secrets/` are denied in `settings.json`.
-- **Ask first**: `git push` and `gh pr merge`. Force-push and `rm -rf` are denied.
+- **Push**: `git push origin ticket/*` is allowed so builders can work unattended. Pushes to `main` and `gh pr merge` ask the user first. Force-push and `rm -rf` are denied. Any other push asks by default.
 
 Rules the agents must follow:
 1. **Never commit secrets.** Use env vars or a secret manager. Never paste a secret value into a file, a log, a PR, or a reply.

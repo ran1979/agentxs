@@ -5,6 +5,6 @@ set -euo pipefail
 
 cmd=$(jq -r '.tool_input.command // empty')
 case "$cmd" in
-  *"git commit"*) exec "$(dirname "$0")/scan.sh" ;;
+  *git*commit*) exec "$(dirname "$0")/scan.sh" ;;
   *) exit 0 ;;
 esac

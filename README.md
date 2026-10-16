@@ -1,6 +1,6 @@
 # agentxs
 
-Extra-small team of AI agents that turns an idea into reviewed, tested code. Five roles, plain files, no server.
+Extra-small team of AI agents that turns an idea into reviewed, tested code. Six roles, plain files, no server.
 
 ```mermaid
 flowchart LR
@@ -82,10 +82,24 @@ This installs:
 | `.claude/settings.json` | copied once: permissions and hooks (see Guardrails). If you already have one, merge it by hand or the guards and ralph loop stay off. | linked once |
 | `.claude/hooks/*.sh` | copied, refreshed on re-run | linked |
 | `.claude/guard-terms.txt` | copied once: add your own names and IDs | linked once |
-| `.gitignore` | adds `.claude/ralph/` | adds `.claude/ralph/` |
+| `.gitignore` | adds `.claude/ralph/` and `.agentxs-backup/` | adds the same lines |
 | `docs/*.md` | standard templates, created once | standard templates, created once |
 
-Re-run `deploy.sh` any time to update agents and skills. Project `docs/` and an existing `CLAUDE.md` are never overwritten.
+Re-run `deploy.sh` any time to update agents, skills, and hooks. Project `docs/` and an existing `CLAUDE.md` are never overwritten.
+
+If your project already has a `.claude/agents/` or `.claude/skills/` file with the same name and different content, deploy moves your copy to `.agentxs-backup/` (git-ignored) before replacing it.
+
+**Check the install** (changes nothing):
+
+```bash
+./deploy.sh --check ~/path/to/your-project
+```
+
+It lists each piece as `ok` or `FAIL`. Fix the FAIL lines and re-run.
+
+**Restart Claude Code** after install or any hook change. Hooks may not reload in a session that is already running.
+
+**Try it safely first:** make a throwaway project (`mkdir /tmp/agentxs-try && cd /tmp/agentxs-try && git init && git remote add origin <a test repo>`), install into it, and try `explain` and `assist` before `ship`.
 
 ## Modes
 
@@ -107,7 +121,7 @@ Enforced by hooks, not just by instructions:
 |-------|--------------|
 | Commit scan | Before every `git commit`: finds keys, tokens, passwords, emails, phone and card numbers, and your own terms (`.claude/guard-terms.txt`). A hit blocks the commit and boss tells you the file and type. The value is never printed. |
 | Secret files | Claude cannot read `.env*`, `*.pem`, `*.key`, `id_rsa*`, `secrets/`. |
-| Ask first | `git push` and `gh pr merge` ask you. Force-push and `rm -rf` are denied. |
+| Push and merge | Builders may push `ticket/*` branches without asking, so ralph can run unattended. Pushes to `main`, `gh pr merge`, and any other push ask you. Force-push and `rm -rf` are denied. |
 | Reviewer | Scans the whole PR diff again, checks security basics and new dependencies. |
 
 Already-committed secrets or personal data are not fixed by the guard. Rotate or rewrite history yourself. Boss will not do that.
@@ -153,7 +167,7 @@ Exit code 0 means clean. Exit code 2 means something was found; the output names
 Runs one phase of the board in a loop, until the phase is done or blocked. Each pass re-reads `docs/board.md`, so progress lives in files, not in the chat.
 
 ```
-you: "ralph phase 1, cap 10"
+you: "ralph phase 1"        (cap defaults to 4)
   → boss runs builder → reviewer → merge for each ticket
   → Claude finishes a turn
   → the Stop hook (ralph-stop.sh) reads the transcript
@@ -165,7 +179,7 @@ you: "ralph phase 1, cap 10"
 - **Stop hook**: `.claude/hooks/ralph-stop.sh` runs every time Claude finishes a turn. Without a state file it does nothing, so normal use is unaffected.
 - **Why one phase**: a phase is a bounded unit that ends for your review. The loop never runs past it.
 
-Cancel any time: delete `.claude/ralph/state.md`. Ask boss for a cap change before raising it.
+Cancel any time: delete `.claude/ralph/state.md`. The default cap is 4 passes. Ask boss before raising it. Keep phases small: a phase that needs more passes should be split. Context grows across passes in the same session.
 
 Test it on a throwaway project before a real phase. The hook contract comes from Claude Code's documented hook format; it has not been checked against every Claude Code version.
 

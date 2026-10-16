@@ -1,6 +1,6 @@
 # Example: todo-api
 
-A small, finished run of the agentxs `ship` mode, so you can see the output before you install anything. This is documentation only. It is not code you can run.
+An illustrative example of the agentxs `ship` mode output, so you can see what the files look like before you install anything. It was written by hand to show the format: the PR numbers, timestamps, and review outcomes are invented, and the project has no code. It is not a real run and not code you can run.
 
 Read in this order:
 

@@ -5,4 +5,3 @@ Priority: `P1` (must) … `P3` (could). IDs never change. New tickets go at the 
 
 | ID | Title | Phase | Priority | Status | Depends on | Requirements | PR |
 |----|-------|-------|----------|--------|------------|--------------|----|
-| T-001 | Set up test runner and coverage report | 1 | P1 | todo | - | R-001 | |

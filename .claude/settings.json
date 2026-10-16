@@ -9,7 +9,7 @@
       "Bash(git switch:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push origin:*)",
+      "Bash(git push origin ticket/*)",
       "Bash(git pull:*)",
       "Bash(git fetch:*)",
       "Bash(gh pr view:*)",
@@ -27,7 +27,7 @@
     ],
     "ask": [
       "Bash(gh pr merge:*)",
-      "Bash(git push:*)"
+      "Bash(git push origin main:*)"
     ],
     "deny": [
       "Bash(git push --force:*)",

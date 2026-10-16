@@ -60,7 +60,13 @@ fi
 
 # Real secret scanner, if installed (staged changes only)
 if [ -z "$range" ] && command -v gitleaks >/dev/null 2>&1; then
-  if ! gitleaks protect --staged --redact -q; then
+  # Newer gitleaks uses "git --staged"; older versions use "protect --staged".
+  if gitleaks git --help >/dev/null 2>&1; then
+    gitleaks_cmd=(gitleaks git --staged --redact)
+  else
+    gitleaks_cmd=(gitleaks protect --staged --redact)
+  fi
+  if ! "${gitleaks_cmd[@]}"; then
     echo "GUARD: gitleaks found secrets (values redacted above)" >&2
     fail=1
   fi
