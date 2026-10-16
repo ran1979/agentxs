@@ -220,7 +220,7 @@ Step by step:
 agentxs repo:
   CLAUDE.md                 boss rules
   .claude/agents/           architect, builder, reviewer
-  .claude/skills/           pm, retro, explain, ralph
+  .claude/skills/           pm, retro, explain, overview, ralph
   .claude/hooks/            commit guard, secret/PII scan, ralph stop hook
   templates/guard-terms.txt starter list for your own names and IDs
   examples/todo-api/        a finished ship-mode run to read

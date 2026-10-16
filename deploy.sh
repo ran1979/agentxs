@@ -38,7 +38,7 @@ if [ "${1:-}" = "--check" ]; then
   for a in architect builder reviewer; do
     [ -f "$TARGET/.claude/agents/$a.md" ] && ok "agent $a" || bad "agent $a missing"
   done
-  for s in pm retro explain ralph; do
+  for s in pm retro explain ralph overview; do
     [ -f "$TARGET/.claude/skills/$s/SKILL.md" ] && ok "skill $s" || bad "skill $s missing"
   done
   [ "$fail" -eq 0 ] && echo "All checks passed. Start with: cd \"$TARGET\" && claude" || echo "Fix the FAIL lines, then re-run --check."
