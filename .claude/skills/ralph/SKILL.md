@@ -21,7 +21,7 @@ Runs one phase of the board in a loop. Each pass re-reads `docs/board.md`, so pr
 
    Ralph phase N. Run the ship loop for phase N only.
    1. Read docs/board.md. Pick unblocked tickets in phase N with status todo or changes-requested, highest priority first.
-   2. For each ticket: builder, then reviewer, then merge only on an APPROVED comment (see CLAUDE.md). Update board.md on main after each step. Add a log entry in docs/log.md.
+   2. For each ticket: builder (sets its board row on its branch), then reviewer. On CHANGES REQUESTED, set the row to changes-requested on the branch. On APPROVED, set it to done on the branch, push, then merge. Board and log changes go on the ticket branch, never straight to main (see CLAUDE.md).
    3. If a guard blocks something, tell the user the file and type, mark that ticket blocked, and continue with the others.
    4. When every ticket in phase N is done, print <promise>PHASE_DONE</promise>.
    5. If you need the human (a blocked ticket with no other work, an unclear requirement, an approval), print <promise>BLOCKED</promise> and say why in plain words.

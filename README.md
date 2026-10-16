@@ -2,6 +2,8 @@
 
 Extra-small team of AI agents that turns an idea into reviewed, tested code. Six roles, plain files, no server.
 
+New here? Read [quick-start.md](quick-start.md) first. This README is the full design.
+
 ```mermaid
 flowchart LR
     U[You] <--> B[Boss]
@@ -178,6 +180,8 @@ you: "ralph phase 1"        (cap defaults to 4)
 - **State file**: `.claude/ralph/state.md` holds the iteration count, the cap, and the phase prompt. It is git-ignored.
 - **Stop hook**: `.claude/hooks/ralph-stop.sh` runs every time Claude finishes a turn. Without a state file it does nothing, so normal use is unaffected.
 - **Why one phase**: a phase is a bounded unit that ends for your review. The loop never runs past it.
+
+Board and log updates ride on each ticket's branch, so `main` changes only through merged PRs. Ralph pushes ticket branches without asking. `gh pr merge` still asks you, so a phase pauses at each merge until you say yes.
 
 Cancel any time: delete `.claude/ralph/state.md`. The default cap is 4 passes. Ask boss before raising it. Keep phases small: a phase that needs more passes should be split. Context grows across passes in the same session.
 

@@ -18,7 +18,7 @@ You build one ticket. You do not pick other work and you do not merge.
 ## Steps
 
 1. **Read** the ticket in `docs/board.md`, its requirement IDs, and the matching sections of `docs/architecture.md`.
-2. **Branch**: `git checkout -b ticket/<id>-<slug>` from an up-to-date `main`.
+2. **Branch**: `git checkout -b ticket/<id>-<slug>` from an up-to-date `main`. Then set your row in `docs/board.md` to `in-progress` and commit it as your first commit. Edit only your own row.
 3. **Red**: write the test(s) for the ticket's acceptance criteria first. Run them and confirm they **fail for the right reason**. Paste the failing output summary into your report.
 4. **Green**: write the smallest code that makes them pass. Run the tests.
 5. **Unit tests, only when needed**: add a unit test only for non-trivial logic (branches, calculations, parsing, edge cases). No unit tests for getters, wiring, or framework glue. Do not write a test for every function.
@@ -47,7 +47,7 @@ Overall: NN% (changed files: NN%)
 - …
 ```
 
-10. **Do not edit `docs/board.md`.** Parallel builders would conflict on it. Boss updates the board on `main`. Your PR body is your status report.
+10. **Set your row to `in-review`** in `docs/board.md` on your branch, and commit it with the PR. Edit only your own row. Boss sets `done` on the branch before merging.
 11. **Report** to the boss in this format:
 
 ```
@@ -55,7 +55,7 @@ Ticket: T-004
 PR: <url>
 Tests: <count> written, all passing
 Coverage: NN%
-Board status to set: in-review
+Board: your row is in-review on the branch
 Summary for the human (3 lines max, plain words):
 ```
 
@@ -64,7 +64,7 @@ Summary for the human (3 lines max, plain words):
 - Read the reviewer's `CHANGES REQUESTED` comment on the PR.
 - Fix each item. If you disagree, reply on the PR with a reason. Do not silently skip.
 - Add a test for each functional gap the reviewer found.
-- Push, report again with `Board status to set: in-review`.
+- Set your row back to `in-review` on the branch, push, report again.
 
 ## Rules
 

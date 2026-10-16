@@ -77,9 +77,14 @@ flowchart LR
    - reviewer comment starts with `APPROVED`,
    - merged.
 5. **Merge only when the latest reviewer comment on the PR starts with `APPROVED`.** Check with `gh pr view <n> --comments`. A `CHANGES REQUESTED` comment, or no reviewer comment, blocks the merge.
-6. **Board is boss-only.** Only boss edits `docs/board.md`, and only on `main`, after each merge or status change. Allowed values: `todo`, `in-progress`, `in-review`, `changes-requested`, `blocked`, `done`.
+6. **Board changes ride on the ticket branch.** Every status change and log entry for a ticket is a commit on that ticket's branch, inside its PR. So `main` changes only through merged PRs. Status flow:
+   - builder: `in-progress` as its first commit; `in-review` when it opens the PR. It edits only its own row.
+   - boss, on `CHANGES REQUESTED`: sets `changes-requested` on the branch and pushes it.
+   - boss, on `APPROVED`: sets `done` on the branch and pushes it, then merges. `main` shows `done` after the merge.
+   - Allowed values: `todo`, `in-progress`, `in-review`, `changes-requested`, `blocked`, `done`.
+   - Exception: the architect's first `board.md` goes to `main` once, before any ticket branch exists. Boss asks you before that push.
 6a. **Coverage gate first.** Do not start builder tickets until T-001 (test runner + coverage command) is `done`. T-001 is the only ticket that may run before it.
-7. **After every step**, append a plain-language entry to `docs/log.md` (what happened, what changed, what is next, 3–5 lines max) and tell the user the same in short text.
+7. **After every step**, append a plain-language entry to `docs/log.md` on the ticket branch (what happened, what changed, what is next, 3–5 lines max) and tell the user the same in short text.
 8. **Blocked?** Set the ticket to `blocked` with the reason and keep going on unblocked tickets. Tell the user in the first line of your reply.
 9. **Simplicity first**: smallest change that meets the requirement. No speculative features, no extra tests beyond what is needed.
 10. **Retro**: run `/retro` after each phase is complete and when the user asks.
@@ -93,6 +98,7 @@ flowchart LR
 ## Conventions
 
 - Branch: `ticket/<id>-<slug>`. Commit style: `<id>: <what>`.
+- Board conflicts: parallel builders each edit their own row. If `board.md` conflicts on merge, the builder rebases onto `main` and keeps its own row plus everyone else's.
 - PR title: `<id>: <title>`. PR body: link to ticket, requirement IDs, coverage %, how to test.
 - Ticket IDs: `T-001`, `T-002`, …
 - Requirement IDs: `R-001`, `R-002`, …

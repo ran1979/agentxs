@@ -29,7 +29,7 @@ Format: the files in the project's `docs/` are the standard (copied from agentxs
 2. Propose **2–3 options**. For each: one diagram, pros, cons, and when to pick it. Recommend one and say why in one line.
 3. Write the functional and non-functional aspects of the chosen option (NFRs: performance, security, scale, observability, cost — only the ones that matter).
 4. Split the chosen option into **phases**. Phase 1 = smallest useful slice that proves the design. Later phases add scope.
-5. Write tickets to `docs/board.md`, grouped by phase, each traceable to requirement IDs.
+5. Write tickets to `docs/board.md`, grouped by phase, each traceable to requirement IDs. Commit it on `main` as one commit. This is the only time the board goes straight to `main`.
 
 ## docs/architecture.md template
 
