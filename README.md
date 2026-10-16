@@ -60,6 +60,7 @@ This installs:
 | `.claude/agents/*.md` | copied, refreshed on re-run | linked |
 | `.claude/skills/*/` | copied, refreshed on re-run | linked |
 | `CLAUDE.md` | copied once (never overwritten) | linked once |
+| `.claude/settings.json` | copied once: permissions (safe git/gh/test commands allowed; merge and push ask first; force-push denied) | linked once |
 | `docs/*.md` | standard templates, created once | standard templates, created once |
 
 Re-run `deploy.sh` any time to update agents and skills. Project `docs/` and an existing `CLAUDE.md` are never overwritten.

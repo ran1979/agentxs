@@ -10,7 +10,12 @@ Goal: make the process better, not blame anyone. Keep it to one page.
 ## Steps
 
 1. Read `docs/log.md` (since the last retro entry), `docs/board.md`, and `docs/retro.md` (last entry).
-2. Gather facts: tickets done, tickets sent back by the reviewer and why, blocked items, coverage trend, anything the user had to correct.
+2. Gather facts from real data, not memory:
+   - `gh pr list --state all --limit 50` for merged vs. closed PRs.
+   - For PRs sent back: `gh pr view <n> --comments` and read the `CHANGES REQUESTED` comments. Count them and group by type (bug, coverage, style, scope).
+   - Blocked items and coverage numbers from `docs/board.md` and the log.
+   - Anything the user had to correct.
+   If `gh` is not logged in, say so and use the log only.
 3. Answer four questions:
    - What worked and should stay?
    - What wasted time or caused rework?

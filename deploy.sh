@@ -48,6 +48,11 @@ if [ ! -e "$TARGET/CLAUDE.md" ]; then
 else
   echo "CLAUDE.md exists: merge boss rules from $SRC/CLAUDE.md by hand."
 fi
+if [ ! -e "$TARGET/.claude/settings.json" ]; then
+  if [ "$MODE" = symlink ]; then ln -s "$SRC/.claude/settings.json" "$TARGET/.claude/settings.json"; else cp "$SRC/.claude/settings.json" "$TARGET/.claude/settings.json"; fi
+else
+  echo "settings.json exists: merge permissions from $SRC/.claude/settings.json by hand."
+fi
 for t in "$SRC"/templates/docs/*.md; do
   dst="$TARGET/docs/$(basename "$t")"
   [ -e "$dst" ] || cp "$t" "$dst"
