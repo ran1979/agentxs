@@ -68,6 +68,7 @@ Summary for the human (3 lines max, plain words):
 
 ## Rules
 
+- Before each commit, run `.claude/hooks/scan.sh`. The commit hook runs it too, but run it yourself so you catch problems early. On exit 2, remove the item (use env vars for secrets), then retry. Tell the boss the file and type. Never print the value.
 - Never edit requirements or architecture. If they are wrong, stop and report to the boss as `blocked`.
 - Never merge. Never force-push. Never skip hooks.
 - Keep the diff small. If the ticket grows, stop and tell the boss to split it.

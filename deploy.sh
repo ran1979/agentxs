@@ -11,12 +11,12 @@ MODE=copy
 [ "${2:-}" = "--symlink" ] && MODE=symlink
 
 # Preflight: required tools.
-for tool in git gh; do
+for tool in git gh jq; do
   command -v "$tool" >/dev/null || { echo "missing: $tool (install it, then re-run)"; exit 1; }
 done
 gh auth status >/dev/null 2>&1 || echo "warning: gh is not logged in. Run: gh auth login (needed for PRs)"
 
-mkdir -p "$TARGET/.claude/agents" "$TARGET/.claude/skills" "$TARGET/docs"
+mkdir -p "$TARGET/.claude/agents" "$TARGET/.claude/skills" "$TARGET/.claude/hooks" "$TARGET/docs"
 
 # Preflight: target should be a git repo with a remote (builder opens PRs).
 if ! git -C "$TARGET" rev-parse --git-dir >/dev/null 2>&1; then
@@ -42,7 +42,22 @@ for d in "$SRC"/.claude/skills/*/; do
   if [ "$MODE" = symlink ]; then ln -s "${d%/}" "$dst"; else cp -R "${d%/}" "$dst"; fi
 done
 
+# Hooks: agentxs owns them, refresh on every run.
+for h in "$SRC"/.claude/hooks/*.sh; do
+  dst="$TARGET/.claude/hooks/$(basename "$h")"
+  rm -rf "$dst"
+  if [ "$MODE" = symlink ]; then ln -s "$h" "$dst"; else cp "$h" "$dst"; fi
+done
+
 # The project owns these after first install: never overwrite.
+if [ ! -e "$TARGET/.claude/guard-terms.txt" ]; then
+  cp "$SRC/templates/guard-terms.txt" "$TARGET/.claude/guard-terms.txt"
+fi
+if [ -f "$TARGET/.gitignore" ]; then
+  grep -qxF '.claude/ralph/' "$TARGET/.gitignore" || echo '.claude/ralph/' >> "$TARGET/.gitignore"
+else
+  echo '.claude/ralph/' > "$TARGET/.gitignore"
+fi
 if [ ! -e "$TARGET/CLAUDE.md" ]; then
   if [ "$MODE" = symlink ]; then ln -s "$SRC/CLAUDE.md" "$TARGET/CLAUDE.md"; else cp "$SRC/CLAUDE.md" "$TARGET/CLAUDE.md"; fi
 else

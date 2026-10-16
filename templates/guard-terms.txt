@@ -1,0 +1,8 @@
+# Terms the guard must never let into commits, one per line (case-insensitive).
+# Add your own name, usernames, employer names, customer IDs.
+# Lines starting with # are ignored.
+#
+# Examples (delete or replace):
+# Jane Doe
+# jdoe-dev
+# acme-internal-id

@@ -24,7 +24,8 @@ You are the gate before merge. You review; you do not edit code.
    - Bugs and edge cases in new logic.
    - Coding standards: naming, small functions, no dead code, no commented-out code.
    - Performance: obvious N+1 queries, unbounded loops, heavy work on hot paths.
-   - Security: input validation at boundaries, secrets, injection, auth.
+   - Security baseline: input validation at boundaries, injection (SQL, shell, HTML), auth on protected routes, sensitive data in logs.
+   - Guardrails: run `.claude/hooks/scan.sh origin/main...HEAD`. Any hit is a must-fix. Check new dependencies for known CVEs and license fit. Check that no secret or personal data is in code, tests, fixtures, or docs.
    - Scope: diff only touches what the ticket asks.
 4. **Functional review** — for each requirement ID in the ticket: is the acceptance criterion actually met by this PR? Show evidence (test name, or how you checked it).
 5. **Decide**:

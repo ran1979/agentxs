@@ -41,7 +41,7 @@ Then install it into a project (see below). Pull updates any time with `git pull
 
 ## Install into a project
 
-Requirements: [Claude Code](https://claude.com/claude-code), `git`, GitHub CLI (`gh`) logged in. The project must be a git repo with an `origin` remote (deploy.sh warns if not). Windows: use WSL.
+Requirements: [Claude Code](https://claude.com/claude-code), `git`, `jq`, GitHub CLI (`gh`) logged in. The project must be a git repo with an `origin` remote (deploy.sh warns if not). Windows: use WSL.
 
 ```bash
 # copy (snapshot, default, safe to commit and share)
@@ -60,7 +60,10 @@ This installs:
 | `.claude/agents/*.md` | copied, refreshed on re-run | linked |
 | `.claude/skills/*/` | copied, refreshed on re-run | linked |
 | `CLAUDE.md` | copied once (never overwritten) | linked once |
-| `.claude/settings.json` | copied once: permissions (safe git/gh/test commands allowed; merge and push ask first; force-push denied) | linked once |
+| `.claude/settings.json` | copied once: permissions and hooks (see Guardrails). If you already have one, merge it by hand or the guards and ralph loop stay off. | linked once |
+| `.claude/hooks/*.sh` | copied, refreshed on re-run | linked |
+| `.claude/guard-terms.txt` | copied once: add your own names and IDs | linked once |
+| `.gitignore` | adds `.claude/ralph/` | adds `.claude/ralph/` |
 | `docs/*.md` | standard templates, created once | standard templates, created once |
 
 Re-run `deploy.sh` any time to update agents and skills. Project `docs/` and an existing `CLAUDE.md` are never overwritten.
@@ -76,6 +79,34 @@ Boss picks one from your first message:
 | **ship** | "build X" | Full pipeline: requirements, design, tickets, PRs, review, merge. |
 
 See `examples/todo-api/` for a finished `ship` run.
+
+## Guardrails
+
+Enforced by hooks, not just by instructions:
+
+| Guard | What it does |
+|-------|--------------|
+| Commit scan | Before every `git commit`: finds keys, tokens, passwords, emails, phone and card numbers, and your own terms (`.claude/guard-terms.txt`). A hit blocks the commit and boss tells you the file and type. The value is never printed. |
+| Secret files | Claude cannot read `.env*`, `*.pem`, `*.key`, `id_rsa*`, `secrets/`. |
+| Ask first | `git push` and `gh pr merge` ask you. Force-push and `rm -rf` are denied. |
+| Reviewer | Scans the whole PR diff again, checks security basics and new dependencies. |
+
+Optional: install `gitleaks` for a stronger scan. The scan uses it automatically when present.
+
+Already-committed secrets or personal data are not fixed by the guard. Rotate or rewrite history yourself. Boss will not do that.
+
+## Ralph loop
+
+Runs one phase of the board in a loop, until the phase is done or blocked. Each pass re-reads `docs/board.md`, so progress lives in files.
+
+```
+you: "ralph phase 1, cap 10"
+  → boss runs builder → reviewer → merge for each ticket
+  → after each turn, the loop feeds the phase prompt back
+  → stops on <promise>PHASE_DONE</promise>, <promise>BLOCKED</promise>, or the cap
+```
+
+Cancel any time: delete `.claude/ralph/state.md`. Ask boss for a cap change before raising it.
 
 ## How to use it
 
@@ -110,7 +141,9 @@ Step by step:
 agentxs repo:
   CLAUDE.md                 boss rules
   .claude/agents/           architect, builder, reviewer
-  .claude/skills/           pm, retro, explain
+  .claude/skills/           pm, retro, explain, ralph
+  .claude/hooks/            commit guard, secret/PII scan, ralph stop hook
+  templates/guard-terms.txt starter list for your own names and IDs
   examples/todo-api/        a finished ship-mode run to read
   templates/docs/           standard formats for project docs
   deploy.sh                 install into a project (copy or --symlink)
